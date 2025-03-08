@@ -43,10 +43,11 @@ int main() {
         return 1;
     }
 
-    ffi::Response* response = ffi::sf_command_execute(session, 1);
+    //ffi::Response* response = ffi::sf_command_execute(session, 1);
+    ffi::Response* response = ffi::exec_Update(session);
     ffi::sf_response_free(response);
 
-    response = ffi::sf_command_execute(session, 31);
+    response = ffi::exec_HallOfFamePage(session, 0);
     
     print_vals(response);
 
