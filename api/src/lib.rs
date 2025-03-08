@@ -75,26 +75,26 @@ pub extern "C" fn sf_session_free(session: *mut Session) {
     }
 }
 
-/// Executes a command on the server
+/// Executes a command on the server and returns the response
 #[no_mangle]
-pub extern "C" fn sf_command_execute(session: *mut Session, command_id: u32) -> bool {
+pub extern "C" fn sf_command_execute(session: *mut Session, command_id: u32) -> *mut Response {
     if session.is_null() {
-        return false;
+        return ptr::null_mut();
     }
 
     let command = match Command::from_id(command_id) {
         Some(cmd) => cmd,
-        None => return false, // Unknown command
+        None => return ptr::null_mut(), // Invalid command
     };
 
     let session = unsafe { &mut *session };
     let runtime = Runtime::new().expect("Failed to create Tokio runtime");
 
     match runtime.block_on(session.send_command(command)) {
-        Ok(_) => true,
+        Ok(response) => Box::into_raw(Box::new(response)), // Return Response pointer
         Err(e) => {
             eprintln!("sf_command_execute: Failed to execute command: {:?}", e);
-            false
+            ptr::null_mut()
         }
     }
 }
