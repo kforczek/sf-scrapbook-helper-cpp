@@ -1,0 +1,3 @@
+.vscode/tasks.json
+api/target
+api/Cargo.lock
