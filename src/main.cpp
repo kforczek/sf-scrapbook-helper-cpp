@@ -6,9 +6,9 @@ int main() {
     const char* password = "";
     const char* server_url = "http://s17.sfgame.eu";
 
-    ffi::Session* session = ffi::sf_session_new(reinterpret_cast<const uint8_t*>(username),
-                                      reinterpret_cast<const uint8_t*>(password),
-                                      reinterpret_cast<const uint8_t*>(server_url));
+    ffi::Session* session = ffi::sf_session_new(reinterpret_cast<const int8_t*>(username),
+                                      reinterpret_cast<const int8_t*>(password),
+                                      reinterpret_cast<const int8_t*>(server_url));
 
     if (!session) {
         std::cerr << "Failed to create session\n";

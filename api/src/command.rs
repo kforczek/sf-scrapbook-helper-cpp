@@ -840,6 +840,42 @@ pub enum TimeSkip {
 }
 
 impl Command {
+    pub fn from_id(id: u32) -> Option<Self> {
+        match id {
+            1 => Some(Command::Update),
+            2 => Some(Command::BuyBeer),
+            3 => Some(Command::CancelQuest),
+            4 => Some(Command::FinishWork),
+            5 => Some(Command::CheckArena),
+            6 => Some(Command::CollectCalendar),
+            7 => Some(Command::ToiletFlush),
+            8 => Some(Command::ToiletOpen),
+            9 => Some(Command::GuildLoadMushrooms),
+            10 => Some(Command::GuildJoinAttack),
+            11 => Some(Command::GuildJoinDefense),
+            12 => Some(Command::GuildRaid),
+            13 => Some(Command::FightPortal),
+            14 => Some(Command::GuildPortalBattle),
+            15 => Some(Command::GuildGetFightableTargets),
+            16 => Some(Command::FortressGemStoneSearch),
+            17 => Some(Command::FortressGemStoneSearchCancel),
+            18 => Some(Command::FortressUpgradeHallOfKnights),
+            19 => Some(Command::IdleSacrifice),
+            20 => Some(Command::SwapManequin),
+            21 => Some(Command::UpdateFlag { flag: None }),
+            22 => Some(Command::BlockGuildInvites { block_invites: false }),
+            23 => Some(Command::ShowTips { show_tips: true }),
+            24 => Some(Command::HellevatorEnter),
+            25 => Some(Command::HellevatorViewGuildRanking),
+            26 => Some(Command::HellevatorRefreshShop),
+            27 => Some(Command::HellevatorClaimDaily),
+            28 => Some(Command::HellevatorClaimDailyYesterday),
+            29 => Some(Command::HellevatorClaimFinal),
+            30 => Some(Command::HellevatorPreviewRewards),
+            _ => None, // Return None for unknown commands
+        }
+    }
+
     /// Returns the unencrypted string, that has to be send to the server to to
     /// perform the request
     #[allow(deprecated, clippy::useless_format)]
