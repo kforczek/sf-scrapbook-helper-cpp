@@ -872,6 +872,7 @@ impl Command {
             28 => Some(Command::HellevatorClaimDailyYesterday),
             29 => Some(Command::HellevatorClaimFinal),
             30 => Some(Command::HellevatorPreviewRewards),
+            31 => Some(Command::HallOfFamePage { page: 0 }),
             _ => None, // Return None for unknown commands
         }
     }

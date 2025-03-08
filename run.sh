@@ -1,3 +1,5 @@
+set -e
+
 echo "##### Compiling RUST API... #####"
 cd api
 cargo build --release

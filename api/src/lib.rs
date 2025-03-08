@@ -121,18 +121,67 @@ pub extern "C" fn sf_response_free(response: *mut Response) {
     }
 }
 
+/// Retrieves the keys from a parsed response
+#[no_mangle]
+pub extern "C" fn sf_response_get_keys(response: *mut Response, out_len: *mut usize) -> *mut *const i8 {
+    if response.is_null() || out_len.is_null() {
+        return ptr::null_mut();
+    }
+
+    let response = unsafe { &*response };
+    let keys: Vec<CString> = response.values().keys().map(|&key| CString::new(key).unwrap()).collect();
+    
+    // Convert CString to *const i8 (C-compatible)
+    let mut c_keys: Vec<*const i8> = keys.iter().map(|s| s.as_ptr()).collect();
+    
+    // Store length in out_len
+    unsafe { *out_len = c_keys.len(); }
+
+    // Leak memory (C++ must call sf_response_free_keys() later)
+    let ptr = c_keys.as_mut_ptr();
+    std::mem::forget(keys);
+    std::mem::forget(c_keys);
+    ptr
+}
+
+/// Frees the memory allocated by sf_response_get_keys
+#[no_mangle]
+pub extern "C" fn sf_response_free_keys(keys: *mut *const i8, len: usize) {
+    if keys.is_null() {
+        return;
+    }
+    unsafe {
+        let _ = Vec::from_raw_parts(keys, len, len); // Reclaim ownership, drop it
+    }
+}
+
+
 /// Retrieves a value from a parsed response
 #[no_mangle]
-pub extern "C" fn sf_response_get_value(response: *mut Response, key: *const i8) -> *const i8 {
+pub extern "C" fn sf_response_get_value(response: *mut Response, key: *const i8) -> *mut i8 {
     if response.is_null() || key.is_null() {
-        return ptr::null();
+        return ptr::null_mut();
     }
+
     let key_cstr = unsafe { CStr::from_ptr(key) };
     let key_str = key_cstr.to_str().unwrap_or("");
+
     let response = unsafe { &*response };
+
     if let Some(value) = response.values().get(key_str) {
         let c_string = CString::new(value.as_str()).unwrap();
-        return c_string.into_raw();
+        return c_string.into_raw();  // Now returning a mutable pointer
     }
-    ptr::null()
+    ptr::null_mut()
+}
+
+/// Frees a C string allocated by `sf_response_get_value`
+#[no_mangle]
+pub extern "C" fn sf_response_free_value(value: *mut i8) {
+    if value.is_null() {
+        return;
+    }
+    unsafe {
+        drop(CString::from_raw(value)); // Reclaim and drop the CString
+    }
 }
