@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Define the source files
-set(SOURCES main.cpp sf_session.cpp)
+set(SOURCES main.cpp api/sf_session.cpp)
 
 # Include the header directory
 include_directories(../api/target)

@@ -627,26 +627,6 @@ pub extern "C" fn exec_FortressBuildCancel(session: *mut Session, f_type: u8) ->
 }
 
 #[no_mangle]
-pub extern "C" fn exec_FortressGather(session: *mut Session, resource: u8) -> *mut Response {
-    execute_command(
-        session,
-        Command::FortressGather {
-            resource: FortressResourceType::from_usize(resource as usize).unwrap_or(FortressResourceType::Wood),
-        },
-    )
-}
-
-#[no_mangle]
-pub extern "C" fn exec_UnderworldCollect(session: *mut Session, resource: u8) -> *mut Response {
-    execute_command(
-        session,
-        Command::UnderworldCollect {
-            resource: UnderWorldResourceType::from_usize(resource as usize).unwrap_or(UnderWorldResourceType::Souls),
-        },
-    )
-}
-
-#[no_mangle]
 pub extern "C" fn exec_FortressBuildFinish(session: *mut Session, f_type: u8, mushrooms: u32) -> *mut Response {
     execute_command(
         session,
@@ -664,6 +644,26 @@ pub extern "C" fn exec_FortressBuildUnit(session: *mut Session, unit: u8, count:
         Command::FortressBuildUnit {
             unit: FortressUnitType::from_usize(unit as usize).unwrap_or(FortressUnitType::Soldier),
             count,
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn exec_FortressGather(session: *mut Session, resource: u8) -> *mut Response {
+    execute_command(
+        session,
+        Command::FortressGather {
+            resource: FortressResourceType::from_usize(resource as usize).unwrap_or(FortressResourceType::Wood),
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn exec_UnderworldCollect(session: *mut Session, resource: u8) -> *mut Response {
+    execute_command(
+        session,
+        Command::UnderworldCollect {
+            resource: UnderWorldResourceType::from_usize(resource as usize).unwrap_or(UnderWorldResourceType::Souls),
         },
     )
 }
