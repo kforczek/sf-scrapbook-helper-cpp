@@ -3,6 +3,7 @@
 namespace sf
 {
 
+// The type of building, that can be built in the fortress
 enum class FortressBuildingType
 {
     Fortress,
@@ -20,6 +21,7 @@ enum class FortressBuildingType
 }; // FortressBuildingType
 
 
+// The type of a unit usable in the fortress
 enum class FortressUnitType
 {
     Soldier,
@@ -28,6 +30,7 @@ enum class FortressUnitType
 }; // FortressUnitType
 
 
+// The type of resource available in the fortress
 enum class FortressResourceType
 {
     Wood,
@@ -36,6 +39,7 @@ enum class FortressResourceType
 }; // FortressResourceType
 
 
+// The type of a producible resource in the underworld
 enum class UnderworldResourceType
 {
     Souls,
@@ -44,6 +48,7 @@ enum class UnderworldResourceType
 }; // UnderworldResourceType
 
 
+// The type of unit in the underworld
 enum class UnderworldUnitType
 {
     Goblin,
@@ -52,6 +57,7 @@ enum class UnderworldUnitType
 }; // UnderworldUnitType
 
 
+// The type of building in the underworld
 enum class UnderworldBuildingType
 {
     HeartOfDarkness,
@@ -84,6 +90,7 @@ enum class MountType
 }; // MountType
 
 
+// A type of attribute
 enum class AttributeType
 {
     Strength = 1,

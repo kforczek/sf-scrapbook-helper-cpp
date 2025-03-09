@@ -42,6 +42,8 @@ Session::~Session()
         ffi::destr_session(m_session);
 }
 
+// ###################  No-argument commands  ################### //
+
 CommandResponse Session::update() { return ffi::exec_Update(m_session); }
 CommandResponse Session::buyBeer() { return ffi::exec_BuyBeer(m_session); }
 CommandResponse Session::cancelQuest() { return ffi::exec_CancelQuest(m_session); }
@@ -72,6 +74,9 @@ CommandResponse Session::buyGoldFrame() { return ffi::exec_BuyGoldFrame(m_sessio
 CommandResponse Session::fortressGemStoneSearch() { return ffi::exec_FortressGemStoneSearch(m_session); }
 CommandResponse Session::fortressGemStoneSearchCancel() { return ffi::exec_FortressGemStoneSearchCancel(m_session); }
 CommandResponse Session::fortressUpgradeHallOfKnights() { return ffi::exec_FortressUpgradeHallOfKnights(m_session); }
+
+
+// ###################  Commands with trivial arguments  ################### //
 
 CommandResponse Session::hallOfFamePage(size_t page) { return ffi::exec_HallOfFamePage(m_session, page); }
 CommandResponse Session::hallOfFameFortressPage(size_t page) { return ffi::exec_HallOfFameFortressPage(m_session, page); }
@@ -113,6 +118,8 @@ CommandResponse Session::startWork(unsigned short hours) {
     return ffi::exec_StartWork(m_session, (uint8_t) hours);
 }
 
+
+// ###################  Commands with custom enum types  ################### //
 
 CommandResponse Session::fortressBuild(FortressBuildingType building) { return ffi::exec_FortressBuild(m_session, static_cast<uint8_t>(building)); }
 CommandResponse Session::fortressBuildCancel(FortressBuildingType building) { return ffi::exec_FortressBuildCancel(m_session, static_cast<uint8_t>(building)); }
