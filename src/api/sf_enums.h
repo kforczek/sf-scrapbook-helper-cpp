@@ -118,4 +118,31 @@ enum class PlayerItemPlaceType
     ExtendedInventory = 5
 }; // PlayerItemPlace
 
+
+enum class TimeSkipType
+{
+    Mushroom = 1,
+    Glass
+}; // TimeSkipType
+
+
+enum class HellevatorTreatType
+{
+    ChocolateChilliPepper = 1,
+    PeppermintChocolate,
+    Electroshock,
+    ChillIceCream,
+    CracklingChewingGum,
+    PeppermintChewingGum,
+    BeerBiscuit,
+    GingerBreadHeart,
+    FortuneCookie,
+    CannedSpinach,
+    StoneBiscuit,
+    OrganicGranolaBar,
+    ChocolateGoldCoin,
+    Unknown = 230
+}; // HellevatorTreatType
+
+
 } // namespace sf

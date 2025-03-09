@@ -55,6 +55,7 @@ public:
     CommandResponse fortressUpgradeHallOfKnights();
     CommandResponse expeditionContinue();
     
+
     /* Commands with trivial arguments */
     CommandResponse hallOfFamePage(size_t page);
     CommandResponse hallOfFameFortressPage(size_t page);
@@ -89,6 +90,18 @@ public:
     CommandResponse blockGuildInvites(bool blockInvites);
     CommandResponse showTips(bool showTips);
     CommandResponse unlockFeature(long mainIdent, long subIdent);
+    CommandResponse expeditionStart(size_t pos);
+    CommandResponse expeditionPickEncounter(size_t pos);
+    CommandResponse expeditionPickReward(size_t pos);
+    CommandResponse hallOfFameHellevatorPage(size_t page);
+    CommandResponse claimablePreview(long int msgId);
+    CommandResponse claimableClaim(long int msgId);
+    CommandResponse hellevatorJoinHellAttack(bool useMushroom, size_t plain);
+    CommandResponse hellevatorFight(bool useMushroom);
+    CommandResponse fortressGemStoneSearchFinish(unsigned int mushrooms);
+    CommandResponse fortressAttack(unsigned int soldiers);
+    CommandResponse fortressGatherSecretStorage(size_t stone, size_t wood);
+
 
     /* Commands with custom enum types */
     CommandResponse fortressBuild(FortressBuildingType building);
@@ -105,6 +118,8 @@ public:
     CommandResponse increaseAttribute(AttributeType attribute, unsigned int increaseTo);
     CommandResponse guildIncreaseSkill(GuildSkillType skill, unsigned short current);
     CommandResponse toiletDrop(PlayerItemPlaceType inventory, size_t pos);
+    CommandResponse expeditionSkipWait(TimeSkipType type);
+    CommandResponse hellevatorBuy(size_t position, HellevatorTreatType treat, unsigned int price, bool useMushroom);
 
 
 private:

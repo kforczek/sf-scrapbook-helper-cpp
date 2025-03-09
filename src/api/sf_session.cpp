@@ -111,6 +111,18 @@ CommandResponse Session::hallOfFamePetsPage(unsigned int page) { return ffi::exe
 CommandResponse Session::blockGuildInvites(bool blockInvites) { return ffi::exec_BlockGuildInvites(m_session, blockInvites); }
 CommandResponse Session::showTips(bool showTips) { return ffi::exec_ShowTips(m_session, showTips); }
 CommandResponse Session::unlockFeature(long mainIdent, long subIdent) { return ffi::exec_UnlockFeature(m_session, mainIdent, subIdent); }
+CommandResponse Session::expeditionStart(size_t pos) { return ffi::exec_ExpeditionStart(m_session, pos); }
+CommandResponse Session::expeditionPickEncounter(size_t pos) { return ffi::exec_ExpeditionPickEncounter(m_session, pos); }
+CommandResponse Session::expeditionPickReward(size_t pos) { return ffi::exec_ExpeditionPickReward(m_session, pos); }
+CommandResponse Session::hallOfFameHellevatorPage(size_t page) { return ffi::exec_HallOfFameHellevatorPage(m_session, page); }
+CommandResponse Session::claimablePreview(long int msgId) { return ffi::exec_ClaimablePreview(m_session, msgId); }
+CommandResponse Session::claimableClaim(long int msgId) { return ffi::exec_ClaimableClaim(m_session, msgId); }
+CommandResponse Session::hellevatorJoinHellAttack(bool useMushroom, size_t plain) { return ffi::exec_HellevatorJoinHellAttack(m_session, useMushroom, plain); }
+CommandResponse Session::hellevatorFight(bool useMushroom) { return ffi::exec_HellevatorFight(m_session, useMushroom); }
+CommandResponse Session::fortressGemStoneSearchFinish(unsigned int mushrooms) { return ffi::exec_FortressGemStoneSearchFinish(m_session, mushrooms); }
+CommandResponse Session::fortressAttack(unsigned int soldiers) { return ffi::exec_FortressAttack(m_session, soldiers); }
+CommandResponse Session::fortressGatherSecretStorage(size_t stone, size_t wood) { return ffi::exec_FortressGatherSecretStorage(m_session, stone, wood); }
+
 CommandResponse Session::startWork(unsigned short hours) {
     static uint8_t MAX_VAL = std::numeric_limits<uint8_t>::max();
     if (hours > MAX_VAL)
@@ -136,6 +148,8 @@ CommandResponse Session::buyMount(MountType mount) { return ffi::exec_BuyMount(m
 CommandResponse Session::increaseAttribute(AttributeType attribute, unsigned int increaseTo) { return ffi::exec_IncreaseAttribute(m_session, static_cast<uint8_t>(attribute), increaseTo); }
 CommandResponse Session::guildIncreaseSkill(GuildSkillType skill, unsigned short current) { return ffi::exec_GuildIncreaseSkill(m_session, static_cast<uint8_t>(skill), current); }
 CommandResponse Session::toiletDrop(PlayerItemPlaceType inventory, size_t pos) { return ffi::exec_ToiletDrop(m_session, static_cast<uint8_t>(inventory), pos); }
+CommandResponse Session::expeditionSkipWait(TimeSkipType type) { return ffi::exec_ExpeditionSkipWait(m_session, static_cast<uint8_t>(type)); }
+CommandResponse Session::hellevatorBuy(size_t position, HellevatorTreatType treat, unsigned int price, bool useMushroom) { return ffi::exec_HellevatorBuy(m_session, position, static_cast<uint8_t>(treat), price, useMushroom); }
 
 
 CommandResponse::CommandResponse(ffi::Response* response)

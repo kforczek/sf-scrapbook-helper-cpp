@@ -598,6 +598,61 @@ pub extern "C" fn exec_ShowTips(session: *mut Session, show_tips: bool) -> *mut 
     execute_command(session, Command::ShowTips { show_tips })
 }
 
+#[no_mangle]
+pub extern "C" fn exec_ExpeditionStart(session: *mut Session, pos: usize) -> *mut Response {
+    execute_command(session, Command::ExpeditionStart { pos })
+}
+
+#[no_mangle]
+pub extern "C" fn exec_ExpeditionPickEncounter(session: *mut Session, pos: usize) -> *mut Response {
+    execute_command(session, Command::ExpeditionPickEncounter { pos })
+}
+
+#[no_mangle]
+pub extern "C" fn exec_ExpeditionPickReward(session: *mut Session, pos: usize) -> *mut Response {
+    execute_command(session, Command::ExpeditionPickReward { pos })
+}
+
+#[no_mangle]
+pub extern "C" fn exec_HallOfFameHellevatorPage(session: *mut Session, page: usize) -> *mut Response {
+    execute_command(session, Command::HallOfFameHellevatorPage { page })
+}
+
+#[no_mangle]
+pub extern "C" fn exec_ClaimablePreview(session: *mut Session, msg_id: i64) -> *mut Response {
+    execute_command(session, Command::ClaimablePreview { msg_id })
+}
+
+#[no_mangle]
+pub extern "C" fn exec_ClaimableClaim(session: *mut Session, msg_id: i64) -> *mut Response {
+    execute_command(session, Command::ClaimableClaim { msg_id })
+}
+
+#[no_mangle]
+pub extern "C" fn exec_HellevatorJoinHellAttack(session: *mut Session, use_mushroom: bool, plain: usize) -> *mut Response {
+    execute_command(session, Command::HellevatorJoinHellAttack { use_mushroom, plain })
+}
+
+#[no_mangle]
+pub extern "C" fn exec_HellevatorFight(session: *mut Session, use_mushroom: bool) -> *mut Response {
+    execute_command(session, Command::HellevatorFight { use_mushroom })
+}
+
+#[no_mangle]
+pub extern "C" fn exec_FortressGemStoneSearchFinish(session: *mut Session, mushrooms: u32) -> *mut Response {
+    execute_command(session, Command::FortressGemStoneSearchFinish { mushrooms })
+}
+
+#[no_mangle]
+pub extern "C" fn exec_FortressAttack(session: *mut Session, soldiers: u32) -> *mut Response {
+    execute_command(session, Command::FortressAttack { soldiers })
+}
+
+#[no_mangle]
+pub extern "C" fn exec_FortressGatherSecretStorage(session: *mut Session, stone: u64, wood: u64) -> *mut Response {
+    execute_command(session, Command::FortressGatherSecretStorage { stone, wood })
+}
+
 
 // #########################################################################
 // #                 COMMANDS WITH CUSTOM ENUMS/STRUCTS                    #
@@ -759,3 +814,28 @@ pub extern "C" fn exec_ToiletDrop(session: *mut Session, inventory: u8, pos: usi
         },
     )
 }
+
+#[no_mangle]
+pub extern "C" fn exec_ExpeditionSkipWait(session: *mut Session, typ: u8) -> *mut Response {
+    execute_command(
+        session,
+        Command::ExpeditionSkipWait {
+            typ: TimeSkip::from_usize(typ as usize).unwrap_or(TimeSkip::Mushroom),
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn exec_HellevatorBuy(session: *mut Session, position: usize, typ: u8, price: u32, use_mushroom: bool) -> *mut Response {
+    execute_command(
+        session,
+        Command::HellevatorBuy {
+            position,
+            typ: HellevatorTreatType::from_usize(typ as usize).unwrap_or(HellevatorTreatType::ChocolateChilliPepper),
+            price,
+            use_mushroom,
+        },
+    )
+}
+
+
