@@ -70,7 +70,7 @@ use tokio::runtime::Runtime;
 
 /// Creates a new session instance
 #[no_mangle]
-pub extern "C" fn sf_session_new(username: *const i8, password: *const i8, server_url: *const i8) -> *mut Session {
+pub extern "C" fn init_session(username: *const i8, password: *const i8, server_url: *const i8) -> *mut Session {
     let user = unsafe { CStr::from_ptr(username).to_str().unwrap_or("").to_string() };
     let pass = unsafe { CStr::from_ptr(password).to_str().unwrap_or("").to_string() };
     let server = unsafe { CStr::from_ptr(server_url).to_str().unwrap_or("").to_string() };
@@ -86,7 +86,7 @@ pub extern "C" fn sf_session_new(username: *const i8, password: *const i8, serve
 
 /// Frees a session instance
 #[no_mangle]
-pub extern "C" fn sf_session_free(session: *mut Session) {
+pub extern "C" fn destr_session(session: *mut Session) {
     if !session.is_null() {
         unsafe { drop(Box::from_raw(session)) };
     }
@@ -94,7 +94,7 @@ pub extern "C" fn sf_session_free(session: *mut Session) {
 
 /// Logs in using a session
 #[no_mangle]
-pub extern "C" fn sf_session_login(session: *mut Session) -> bool {
+pub extern "C" fn login(session: *mut Session) -> bool {
     if session.is_null() {
         return false;
     }
@@ -110,7 +110,7 @@ pub extern "C" fn sf_session_login(session: *mut Session) -> bool {
 
 /// Frees a response object
 #[no_mangle]
-pub extern "C" fn sf_response_free(response: *mut Response) {
+pub extern "C" fn destr_response(response: *mut Response) {
     if !response.is_null() {
         unsafe { drop(Box::from_raw(response)) };
     }
@@ -123,7 +123,7 @@ pub extern "C" fn sf_response_free(response: *mut Response) {
 
 /// Retrieves a value from a parsed response
 #[no_mangle]
-pub extern "C" fn sf_response_get_value(response: *mut Response, key: *const i8) -> *mut i8 {
+pub extern "C" fn response_get_value(response: *mut Response, key: *const i8) -> *mut i8 {
     if response.is_null() || key.is_null() {
         return ptr::null_mut();
     }
@@ -142,7 +142,7 @@ pub extern "C" fn sf_response_get_value(response: *mut Response, key: *const i8)
 
 /// Frees a C string allocated by `sf_response_get_value`
 #[no_mangle]
-pub extern "C" fn sf_response_free_value(value: *mut i8) {
+pub extern "C" fn destr_response_value(value: *mut i8) {
     if value.is_null() {
         return;
     }
@@ -158,7 +158,7 @@ pub extern "C" fn sf_response_free_value(value: *mut i8) {
 
 /// Retrieves the keys from a parsed response
 #[no_mangle]
-pub extern "C" fn sf_response_get_keys(response: *mut Response, out_len: *mut usize) -> *mut *const i8 {
+pub extern "C" fn response_get_keys(response: *mut Response, out_len: *mut usize) -> *mut *const i8 {
     if response.is_null() || out_len.is_null() {
         return ptr::null_mut();
     }
@@ -181,7 +181,7 @@ pub extern "C" fn sf_response_get_keys(response: *mut Response, out_len: *mut us
 
 /// Frees the memory allocated by sf_response_get_keys
 #[no_mangle]
-pub extern "C" fn sf_response_free_keys(keys: *mut *const i8, len: usize) {
+pub extern "C" fn destr_response_keys(keys: *mut *const i8, len: usize) {
     if keys.is_null() {
         return;
     }
