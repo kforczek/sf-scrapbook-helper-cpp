@@ -765,7 +765,7 @@ pub enum BlacksmithAction {
     Upgrade = 204,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, FromPrimitive)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum FortunePayment {
     LuckyCoins = 0,
@@ -808,7 +808,7 @@ pub struct DiceReward {
 }
 
 #[derive(
-    Debug, Copy, Clone, PartialEq, Eq, Enum, FromPrimitive, Hash, EnumIter,
+    Debug, Copy, Clone, PartialEq, Eq, Enum, FromPrimitive, Hash, EnumIter
 )]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[allow(missing_docs)]

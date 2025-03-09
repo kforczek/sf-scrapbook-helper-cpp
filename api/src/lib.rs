@@ -30,38 +30,47 @@ pub mod sso;
 /// Represents the numerical ID of a player on a server.
 pub type PlayerId = u32;
 
-
+pub use num_traits::FromPrimitive;
 pub use crate::error::SFError;
 pub use crate::session::{ServerConnection, Session};
-//pub use crate::command::Command;
 pub use crate::response::Response;
-// pub use crate::command::{
-//     ExpeditionSetting, BlacksmithAction, FortunePayment, RollDicePrice, DiceType, DiceReward, AttributeType,
-//     ShopType, TimeSkip, GuildPortal, BattlesJoined, GuildMemberData,
-//     GuildRank, GuildSkill, Mount,
-// };
 pub use crate::command::*;
-//pub use crate::command::Command::*;
-//pub use crate::unlockables::Unlockable;
+pub use crate::gamestate::fortress::*;
+pub use crate::gamestate::underworld::*;
+pub use crate::gamestate::unlockables::*;
+
 pub use crate::{
     gamestate::{
         character::*,
         dungeons::{CompanionClass, Dungeon},
-        fortress::*,
         guild::{Emblem, GuildSkill},
         idle::IdleBuildingType,
         items::*,
         social::Relationship,
-        underworld::*,
-        unlockables::{
-            EnchantmentIdent, HabitatType, HellevatorTreatType, Unlockable,
-        },
     },
 };
 
 use std::ffi::{CStr, CString};
 use std::ptr;
 use tokio::runtime::Runtime;
+
+/// Common function to execute a command and return a response
+fn execute_command(session: *mut Session, command: Command) -> *mut Response {
+    if session.is_null() {
+        return ptr::null_mut();
+    }
+
+    let session = unsafe { &mut *session };
+    let runtime = Runtime::new().expect("Failed to create Tokio runtime");
+
+    match runtime.block_on(session.send_command(command)) {
+        Ok(response) => Box::into_raw(Box::new(response)),
+        Err(e) => {
+            eprintln!("execute_command: Failed to execute command: {:?}", e);
+            ptr::null_mut()
+        }
+    }
+}
 
 
 // ##############################################
@@ -192,107 +201,8 @@ pub extern "C" fn destr_response_keys(keys: *mut *const i8, len: usize) {
 
 
 // ###########################################################
-// #                 ALL COMMAND WRAPPERS                    #
+// #                 NO-ARGUMENT COMMANDS                    #
 // ###########################################################
-
-/// Common function to execute a command and return a response
-fn execute_command(session: *mut Session, command: Command) -> *mut Response {
-    if session.is_null() {
-        return ptr::null_mut();
-    }
-
-    let session = unsafe { &mut *session };
-    let runtime = Runtime::new().expect("Failed to create Tokio runtime");
-
-    match runtime.block_on(session.send_command(command)) {
-        Ok(response) => Box::into_raw(Box::new(response)),
-        Err(e) => {
-            eprintln!("execute_command: Failed to execute command: {:?}", e);
-            ptr::null_mut()
-        }
-    }
-}
-
-// Macro to generate command functions
-// macro_rules! generate_command_function {
-//     ($name:ident, $command:expr) => {
-//         #[no_mangle]
-//         pub extern "C" fn $name(session: *mut Session) -> *mut Response {
-//             execute_command(session, $command)
-//         }
-//     };
-// }
-
-// Generate functions for simple commands (no arguments)
-// generate_command_function!(exec_Update, Command::Update);
-// generate_command_function!(exec_BuyBeer, Command::BuyBeer);
-// generate_command_function!(exec_CancelQuest, Command::CancelQuest);
-// generate_command_function!(exec_FinishWork, Command::FinishWork);
-// generate_command_function!(exec_CheckArena, Command::CheckArena);
-// generate_command_function!(exec_CollectCalendar, Command::CollectCalendar);
-// generate_command_function!(exec_ToiletFlush, Command::ToiletFlush);
-// generate_command_function!(exec_ToiletOpen, Command::ToiletOpen);
-// generate_command_function!(exec_CancelWork, Command::CancelWork);
-// generate_command_function!(exec_GuildLoadMushrooms, Command::GuildLoadMushrooms);
-// generate_command_function!(exec_GuildJoinAttack, Command::GuildJoinAttack);
-// generate_command_function!(exec_GuildJoinDefense, Command::GuildJoinDefense);
-// generate_command_function!(exec_GuildRaid, Command::GuildRaid);
-// generate_command_function!(exec_GuildPortalBattle, Command::GuildPortalBattle);
-// generate_command_function!(exec_GuildGetFightableTargets, Command::GuildGetFightableTargets);
-// generate_command_function!(exec_ViewScrapbook, Command::ViewScrapbook);
-// generate_command_function!(exec_FightPortal, Command::FightPortal);
-// generate_command_function!(exec_SwapManequin, Command::SwapManequin);
-// generate_command_function!(exec_IdleSacrifice, Command::IdleSacrifice);
-// generate_command_function!(exec_HellevatorEnter, Command::HellevatorEnter);
-// generate_command_function!(exec_HellevatorViewGuildRanking, Command::HellevatorViewGuildRanking);
-// generate_command_function!(exec_HellevatorRefreshShop, Command::HellevatorRefreshShop);
-// generate_command_function!(exec_HellevatorClaimDaily, Command::HellevatorClaimDaily);
-// generate_command_function!(exec_HellevatorClaimDailyYesterday, Command::HellevatorClaimDailyYesterday);
-// generate_command_function!(exec_HellevatorClaimFinal, Command::HellevatorClaimFinal);
-// generate_command_function!(exec_HellevatorPreviewRewards, Command::HellevatorPreviewRewards);
-// generate_command_function!(exec_BuyGoldFrame, Command::BuyGoldFrame);
-
-// generate_command_function!(exec_GuildLoadMushrooms, Command::GuildLoadMushrooms);
-// generate_command_function!(exec_GuildJoinAttack, Command::GuildJoinAttack);
-// generate_command_function!(exec_GuildJoinDefense, Command::GuildJoinDefense);
-// generate_command_function!(exec_GuildRaid, Command::GuildRaid);
-// generate_command_function!(exec_FightPortal, Command::FightPortal);
-// generate_command_function!(exec_GuildPortalBattle, Command::GuildPortalBattle);
-// generate_command_function!(exec_GuildGetFightableTargets, Command::GuildGetFightableTargets);
-// generate_command_function!(exec_FortressGemStoneSearch, Command::FortressGemStoneSearch);
-// generate_command_function!(exec_FortressGemStoneSearchCancel, Command::FortressGemStoneSearchCancel);
-// generate_command_function!(exec_FortressUpgradeHallOfKnights, Command::FortressUpgradeHallOfKnights);
-// generate_command_function!(exec_IdleSacrifice, Command::IdleSacrifice);
-// generate_command_function!(exec_SwapManequin, Command::SwapManequin);
-// generate_command_function!(exec_HellevatorEnter, Command::HellevatorEnter);
-// generate_command_function!(exec_HellevatorViewGuildRanking, Command::HellevatorViewGuildRanking);
-// generate_command_function!(exec_HellevatorRefreshShop, Command::HellevatorRefreshShop);
-// generate_command_function!(exec_HellevatorClaimDaily, Command::HellevatorClaimDaily);
-// generate_command_function!(exec_HellevatorClaimDailyYesterday, Command::HellevatorClaimDailyYesterday);
-// generate_command_function!(exec_HellevatorClaimFinal, Command::HellevatorClaimFinal);
-// generate_command_function!(exec_HellevatorPreviewRewards, Command::HellevatorPreviewRewards);
-// generate_command_function!(exec_ViewScrapbook, Command::ViewScrapbook);
-// generate_command_function!(exec_BuyGoldFrame, Command::BuyGoldFrame);
-// generate_command_function!(exec_FortressUpgradeHallOfKnights, Command::FortressUpgradeHallOfKnights);
-// generate_command_function!(exec_FortressBuild, Command::FortressBuild);
-// generate_command_function!(exec_FortressBuildCancel, Command::FortressBuildCancel);
-// generate_command_function!(exec_FortressGather, Command::FortressGather);
-// generate_command_function!(exec_FortressBuildFinish, Command::FortressBuildFinish);
-// generate_command_function!(exec_FortressBuildUnit, Command::FortressBuildUnit);
-// generate_command_function!(exec_FortressNewEnemy, Command::FortressNewEnemy);
-// generate_command_function!(exec_FortressSetCAEnemy, Command::FortressSetCAEnemy);
-// generate_command_function!(exec_UnderworldCollect, Command::UnderworldCollect);
-// generate_command_function!(exec_UnderworldUnitUpgrade, Command::UnderworldUnitUpgrade);
-// generate_command_function!(exec_UnderworldUpgradeCancel, Command::UnderworldUpgradeCancel);
-// generate_command_function!(exec_UnderworldUpgradeFinish, Command::UnderworldUpgradeFinish);
-// generate_command_function!(exec_GuildPetBattle, Command::GuildPetBattle);
-// generate_command_function!(exec_SpinWheelOfFortune, Command::SpinWheelOfFortune);
-//generate_command_function!(exec_HallOfFameGroupPage, Command::HallOfFameGroupPage);
-//generate_command_function!(exec_HallOfFameUnderworldPage, Command::HallOfFameUnderworldPage);
-//generate_command_function!(exec_HallOfFamePetsPage, Command::HallOfFamePetsPage);
-//generate_command_function!(exec_BlockGuildInvites, Command::BlockGuildInvites);
-//generate_command_function!(exec_ShowTips, Command::ShowTips);
-
 
 #[no_mangle]
 pub extern "C" fn exec_Update(session: *mut Session) -> *mut Response {
@@ -429,8 +339,25 @@ pub extern "C" fn exec_BuyGoldFrame(session: *mut Session) -> *mut Response {
     execute_command(session, Command::BuyGoldFrame)
 }
 
+#[no_mangle]
+pub extern "C" fn exec_FortressGemStoneSearch(session: *mut Session) -> *mut Response {
+    execute_command(session, Command::FortressGemStoneSearch)
+}
 
-// Generate functions for commands with arguments
+#[no_mangle]
+pub extern "C" fn exec_FortressGemStoneSearchCancel(session: *mut Session) -> *mut Response {
+    execute_command(session, Command::FortressGemStoneSearchCancel)
+}
+
+#[no_mangle]
+pub extern "C" fn exec_FortressUpgradeHallOfKnights(session: *mut Session) -> *mut Response {
+    execute_command(session, Command::FortressUpgradeHallOfKnights)
+}
+
+// ##############################################################
+// #                 COMMANDS WITH ARGUMENTS                    #
+// ##############################################################
+
 #[no_mangle]
 pub extern "C" fn exec_HallOfFamePage(session: *mut Session, page: usize) -> *mut Response {
     execute_command(session, Command::HallOfFamePage { page })
@@ -461,30 +388,6 @@ pub extern "C" fn exec_StartWork(session: *mut Session, hours: u8) -> *mut Respo
     execute_command(session, Command::StartWork { hours })
 }
 
-// #[no_mangle]
-// pub extern "C" fn exec_BuyMount(session: *mut Session, mount_type: u8) -> *mut Response {
-//     let mount = match mount_type {
-//         1 => crate::command::Mount::Horse,
-//         2 => crate::command::Mount::Tiger,
-//         3 => crate::command::Mount::Griffon,
-//         _ => return ptr::null_mut(), // Invalid mount type
-//     };
-//     execute_command(session, Command::BuyMount { mount })
-// }
-
-// #[no_mangle]
-// pub extern "C" fn exec_IncreaseAttribute(session: *mut Session, attribute: u32, increase_to: u32) -> *mut Response {
-//     let attr = match attribute {
-//         1 => crate::command::AttributeType::Strength,
-//         2 => crate::command::AttributeType::Dexterity,
-//         3 => crate::command::AttributeType::Intelligence,
-//         4 => crate::command::AttributeType::Constitution,
-//         5 => crate::command::AttributeType::Luck,
-//         _ => return ptr::null_mut(), // Invalid attribute
-//     };
-//     execute_command(session, Command::IncreaseAttribute { attribute: attr, increase_to })
-// }
-
 #[no_mangle]
 pub extern "C" fn exec_RemovePotion(session: *mut Session, pos: usize) -> *mut Response {
     execute_command(session, Command::RemovePotion { pos })
@@ -509,18 +412,6 @@ pub extern "C" fn exec_GuildAttack(session: *mut Session, guild: *const i8) -> *
     let guild_str = guild_cstr.to_str().unwrap_or("").to_string();
     execute_command(session, Command::GuildAttack { guild: guild_str })
 }
-
-// #[no_mangle]
-// pub extern "C" fn exec_GuildIncreaseSkill(session: *mut Session, skill: u16, current: u16) -> *mut Response {
-//     let skill_enum = match skill {
-//         0 => crate::command::GuildSkill::Instructor,
-//         1 => crate::command::GuildSkill::Treasure,
-//         _ => return ptr::null_mut(),
-//     };
-//     execute_command(session, Command::GuildIncreaseSkill { skill: skill_enum, current })
-// }
-
-// Functions for commands requiring arguments
 
 #[no_mangle]
 pub extern "C" fn exec_FinishQuest(session: *mut Session, skip: bool) -> *mut Response {
@@ -598,16 +489,6 @@ pub extern "C" fn exec_GuildToggleOfficer(session: *mut Session, name: *const i8
     execute_command(session, Command::GuildToggleOfficer { name: name_str })
 }
 
-// #[no_mangle]
-// pub extern "C" fn exec_ToiletDrop(session: *mut Session, inventory: u8, pos: usize) -> *mut Response {
-//     let inventory_enum = match inventory {
-//         0 => crate::command::PlayerItemPlace::Inventory,
-//         1 => crate::command::PlayerItemPlace::Shop,
-//         _ => return ptr::null_mut(),
-//     };
-//     execute_command(session, Command::ToiletDrop { inventory: inventory_enum, pos })
-// }
-
 #[no_mangle]
 pub extern "C" fn exec_MessageOpen(session: *mut Session, pos: i32) -> *mut Response {
     execute_command(session, Command::MessageOpen { pos })
@@ -622,16 +503,6 @@ pub extern "C" fn exec_MessageDelete(session: *mut Session, pos: i32) -> *mut Re
 pub extern "C" fn exec_ViewPet(session: *mut Session, pet_id: u16) -> *mut Response {
     execute_command(session, Command::ViewPet { pet_id })
 }
-
-// #[no_mangle]
-// pub extern "C" fn exec_UnlockFeature(session: *mut Session, unlockable: u8) -> *mut Response {
-//     let unlockable_enum = match unlockable {
-//         0 => crate::command::Unlockable::Pets,
-//         1 => crate::command::Unlockable::Fortress,
-//         _ => return ptr::null_mut(),
-//     };
-//     execute_command(session, Command::UnlockFeature { unlockable: unlockable_enum })
-// }
 
 #[no_mangle]
 pub extern "C" fn exec_GambleSilver(session: *mut Session, amount: u64) -> *mut Response {
@@ -681,25 +552,204 @@ pub extern "C" fn exec_SetLanguage(session: *mut Session, language: *const i8) -
     execute_command(session, Command::SetLanguage { language: language_str })
 }
 
+#[no_mangle]
+pub extern "C" fn exec_FortressNewEnemy(session: *mut Session, use_mushroom: bool) -> *mut Response {
+    execute_command(session, Command::FortressNewEnemy { use_mushroom })
+}
+
+#[no_mangle]
+pub extern "C" fn exec_FortressSetCAEnemy(session: *mut Session, msg_id: u32) -> *mut Response {
+    execute_command(session, Command::FortressSetCAEnemy { msg_id })
+}
+
+#[no_mangle]
+pub extern "C" fn exec_GuildPetBattle(session: *mut Session, use_mushroom: bool) -> *mut Response {
+    execute_command(session, Command::GuildPetBattle { use_mushroom })
+}
+
+#[no_mangle]
+pub extern "C" fn exec_HallOfFameGroupPage(session: *mut Session, page: u32) -> *mut Response {
+    execute_command(session, Command::HallOfFameGroupPage { page })
+}
+
+#[no_mangle]
+pub extern "C" fn exec_HallOfFameUnderworldPage(session: *mut Session, page: u32) -> *mut Response {
+    execute_command(session, Command::HallOfFameUnderworldPage { page })
+}
+
+#[no_mangle]
+pub extern "C" fn exec_HallOfFamePetsPage(session: *mut Session, page: u32) -> *mut Response {
+    execute_command(session, Command::HallOfFamePetsPage { page })
+}
+
+#[no_mangle]
+pub extern "C" fn exec_BlockGuildInvites(session: *mut Session, block_invites: bool) -> *mut Response {
+    execute_command(session, Command::BlockGuildInvites { block_invites })
+}
+
+#[no_mangle]
+pub extern "C" fn exec_ShowTips(session: *mut Session, show_tips: bool) -> *mut Response {
+    execute_command(session, Command::ShowTips { show_tips })
+}
+
+
+// #########################################################################
+// #                 COMMANDS WITH CUSTOM ENUMS/STRUCTS                    #
+// #########################################################################
+
+#[no_mangle]
+pub extern "C" fn exec_UnlockFeature(session: *mut Session, main_ident: i64, sub_ident: i64) -> *mut Response {
+    execute_command(session,
+        Command::UnlockFeature {
+            unlockable: Unlockable { main_ident, sub_ident }
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn exec_FortressBuild(session: *mut Session, f_type: u8) -> *mut Response {
+    execute_command(
+        session,
+        Command::FortressBuild {
+            f_type: FortressBuildingType::from_usize(f_type as usize).unwrap_or(FortressBuildingType::Fortress),
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn exec_FortressBuildCancel(session: *mut Session, f_type: u8) -> *mut Response {
+    execute_command(
+        session,
+        Command::FortressBuildCancel {
+            f_type: FortressBuildingType::from_usize(f_type as usize).unwrap_or(FortressBuildingType::Fortress),
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn exec_FortressGather(session: *mut Session, resource: u8) -> *mut Response {
+    execute_command(
+        session,
+        Command::FortressGather {
+            resource: FortressResourceType::from_usize(resource as usize).unwrap_or(FortressResourceType::Wood),
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn exec_UnderworldCollect(session: *mut Session, resource: u8) -> *mut Response {
+    execute_command(
+        session,
+        Command::UnderworldCollect {
+            resource: UnderWorldResourceType::from_usize(resource as usize).unwrap_or(UnderWorldResourceType::Souls),
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn exec_FortressBuildFinish(session: *mut Session, f_type: u8, mushrooms: u32) -> *mut Response {
+    execute_command(
+        session,
+        Command::FortressBuildFinish {
+            f_type: FortressBuildingType::from_usize(f_type as usize).unwrap_or(FortressBuildingType::Fortress),
+            mushrooms,
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn exec_FortressBuildUnit(session: *mut Session, unit: u8, count: u32) -> *mut Response {
+    execute_command(
+        session,
+        Command::FortressBuildUnit {
+            unit: FortressUnitType::from_usize(unit as usize).unwrap_or(FortressUnitType::Soldier),
+            count,
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn exec_UnderworldUnitUpgrade(session: *mut Session, unit: u8) -> *mut Response {
+    execute_command(
+        session,
+        Command::UnderworldUnitUpgrade {
+            unit: UnderworldUnitType::from_usize(unit as usize).unwrap_or(UnderworldUnitType::Goblin),
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn exec_UnderworldUpgradeCancel(session: *mut Session, building: u8) -> *mut Response {
+    execute_command(
+        session,
+        Command::UnderworldUpgradeCancel {
+            building: UnderworldUnitType::from_usize(building as usize).unwrap_or(UnderworldUnitType::Goblin),
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn exec_UnderworldUpgradeFinish(session: *mut Session, building: u8, mushrooms: u32) -> *mut Response {
+    execute_command(
+        session,
+        Command::UnderworldUpgradeFinish {
+            building: UnderworldBuildingType::from_usize(building as usize).unwrap_or(UnderworldBuildingType::HeartOfDarkness),
+            mushrooms,
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn exec_SpinWheelOfFortune(session: *mut Session, payment: u8) -> *mut Response {
+    execute_command(
+        session,
+        Command::SpinWheelOfFortune {
+            payment: FortunePayment::from_usize(payment as usize).unwrap_or(FortunePayment::LuckyCoins),
+        },
+    )
+}
 
 
 
-// #[no_mangle]
-// pub extern "C" fn exec_HallOfFamePage(session: *mut Session, page: usize) -> *mut Response {
-//     if session.is_null() {
-//         return ptr::null_mut();
-//     }
+#[no_mangle]
+pub extern "C" fn exec_BuyMount(session: *mut Session, mount: u8) -> *mut Response {
+    execute_command(
+        session,
+        Command::BuyMount {
+            mount: Mount::from_usize(mount as usize).unwrap_or(Mount::Cow),
+        },
+    )
+}
 
-//     let command = Command::HallOfFamePage{ page };
+#[no_mangle]
+pub extern "C" fn exec_IncreaseAttribute(session: *mut Session, attribute: u8, increase_to: u32) -> *mut Response {
+    execute_command(
+        session,
+        Command::IncreaseAttribute {
+            attribute: AttributeType::from_usize(attribute as usize).unwrap_or(AttributeType::Strength),
+            increase_to,
+        },
+    )
+}
 
-//     let session = unsafe { &mut *session };
-//     let runtime = Runtime::new().expect("Failed to create Tokio runtime");
+#[no_mangle]
+pub extern "C" fn exec_GuildIncreaseSkill(session: *mut Session, skill: u8, current: u16) -> *mut Response {
+    execute_command(
+        session,
+        Command::GuildIncreaseSkill {
+            skill: GuildSkill::from_usize(skill as usize).unwrap_or(GuildSkill::Treasure),
+            current,
+        },
+    )
+}
 
-//     match runtime.block_on(session.send_command(command)) {
-//         Ok(response) => Box::into_raw(Box::new(response)), // Return Response pointer
-//         Err(e) => {
-//             eprintln!("sf_command_execute: Failed to execute command: {:?}", e);
-//             ptr::null_mut()
-//         }
-//     }
-// }
+#[no_mangle]
+pub extern "C" fn exec_ToiletDrop(session: *mut Session, inventory: u8, pos: usize) -> *mut Response {
+    execute_command(
+        session,
+        Command::ToiletDrop {
+            inventory: PlayerItemPlace::from_usize(inventory as usize).unwrap_or(PlayerItemPlace::Equipment),
+            pos,
+        },
+    )
+}

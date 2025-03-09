@@ -75,7 +75,7 @@ impl Inventory {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, EnumIter, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, EnumIter, Hash, FromPrimitive)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[allow(missing_docs)]
 /// All the parts of `ItemPlace`, that are owned by the player

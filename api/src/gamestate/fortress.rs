@@ -141,7 +141,7 @@ pub struct FortressProduction {
     pub per_hour_next_lvl: u64,
 }
 
-#[derive(Debug, Clone, Copy, EnumCount, EnumIter, PartialEq, Eq, Enum)]
+#[derive(Debug, Clone, Copy, EnumCount, EnumIter, PartialEq, Eq, Enum, FromPrimitive)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[allow(missing_docs)]
 /// The type of resource, that the fortress available in the fortress
@@ -258,7 +258,7 @@ impl<T> Default for FortressAction<T> {
     }
 }
 
-#[derive(Debug, Clone, Copy, EnumCount, PartialEq, Eq, Enum, EnumIter)]
+#[derive(Debug, Clone, Copy, EnumCount, PartialEq, Eq, Enum, EnumIter, FromPrimitive)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[allow(missing_docs)]
 /// The type of a unit usable in the fortress

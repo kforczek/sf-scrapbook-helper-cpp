@@ -519,7 +519,7 @@ pub enum GuildRank {
     Invited = 4,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, FromPrimitive)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// Something the player can upgrade in the guild
 #[allow(missing_docs)]
