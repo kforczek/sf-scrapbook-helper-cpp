@@ -74,6 +74,7 @@ CommandResponse Session::buyGoldFrame() { return ffi::exec_BuyGoldFrame(m_sessio
 CommandResponse Session::fortressGemStoneSearch() { return ffi::exec_FortressGemStoneSearch(m_session); }
 CommandResponse Session::fortressGemStoneSearchCancel() { return ffi::exec_FortressGemStoneSearchCancel(m_session); }
 CommandResponse Session::fortressUpgradeHallOfKnights() { return ffi::exec_FortressUpgradeHallOfKnights(m_session); }
+CommandResponse Session::expeditionContinue() { return ffi::exec_ExpeditionContinue(m_session); }
 
 
 // ###################  Commands with trivial arguments  ################### //

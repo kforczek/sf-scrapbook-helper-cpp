@@ -53,6 +53,7 @@ public:
     CommandResponse fortressGemStoneSearch();
     CommandResponse fortressGemStoneSearchCancel();
     CommandResponse fortressUpgradeHallOfKnights();
+    CommandResponse expeditionContinue();
     
     /* Commands with trivial arguments */
     CommandResponse hallOfFamePage(size_t page);

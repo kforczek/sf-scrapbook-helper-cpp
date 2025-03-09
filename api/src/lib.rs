@@ -354,6 +354,12 @@ pub extern "C" fn exec_FortressUpgradeHallOfKnights(session: *mut Session) -> *m
     execute_command(session, Command::FortressUpgradeHallOfKnights)
 }
 
+#[no_mangle]
+pub extern "C" fn exec_ExpeditionContinue(session: *mut Session) -> *mut Response {
+    execute_command(session, Command::ExpeditionContinue)
+}
+
+
 // ##############################################################
 // #                 COMMANDS WITH ARGUMENTS                    #
 // ##############################################################
