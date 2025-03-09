@@ -23,8 +23,8 @@ void print_vals(ffi::Response* response)
 }
 
 int main() {
-    const char* username = "";
-    const char* password = "";
+    const char* username = "E52Yi0yM";
+    const char* password = "My0iY25E";
     const char* server_url = "http://s17.sfgame.eu";
 
     ffi::Session* session = ffi::init_session(reinterpret_cast<const int8_t*>(username),
