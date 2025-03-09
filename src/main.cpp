@@ -1,56 +1,29 @@
-#include "sf-api.hpp"
 #include <iostream>
+#include <unordered_set>
+#include "sf_session.h"
 
-void print_vals(ffi::Response* response)
+
+void printResponse(const sf::CommandResponse& response)
 {
-    size_t keys_cnt;
-    const int8_t** keys_raw = ffi::response_get_keys(response, &keys_cnt);
+    std::unordered_set<std::string> keys = response.getKeys();
+    std::cout << "Keys count: " << keys.size() << "\n";
 
-    auto** keys = reinterpret_cast<const char**>(keys_raw);
-
-    std::cout << "Keys cnt: " << keys_cnt << "\n";
-    std::cout << "Response:\n";
-    for (size_t i = 0; i < keys_cnt; ++i) {
-        std::cout << "Key: " << keys[i] << "; ";
-        
-        int8_t* val_raw = ffi::response_get_value(response, keys_raw[i]);
-        std::cout << "Val: " << reinterpret_cast<char*>(val_raw) << "\n";
-        
-        ffi::destr_response_value(val_raw);
+    for (const std::string& key : keys)
+    {
+        std::cout << "Key: " << key << "; Value: " << response.getValue(key) << "\n";
     }
-
-    ffi::destr_response_keys(keys_raw, keys_cnt);
 }
 
 int main() {
-    const char* username = "E52Yi0yM";
-    const char* password = "My0iY25E";
-    const char* server_url = "http://s17.sfgame.eu";
+    const std::string username = "";
+    const std::string password = "";
+    const std::string serverUrl = "";
 
-    ffi::Session* session = ffi::init_session(reinterpret_cast<const int8_t*>(username),
-                                      reinterpret_cast<const int8_t*>(password),
-                                      reinterpret_cast<const int8_t*>(server_url));
+    sf::Session session{ username, password, serverUrl };
+    session.update();
 
-    if (!session) {
-        std::cerr << "Failed to create session\n";
-        return 1;
-    }
+    sf::CommandResponse hallOfFame = session.hallOfFamePage(/*page*/ 0);
+    printResponse(hallOfFame);
 
-    if (ffi::login(session)) {
-        std::cout << "Login successful!\n";
-    } else {
-        std::cout << "Login failed!\n";
-        return 1;
-    }
-
-    ffi::Response* response = ffi::exec_Update(session);
-    ffi::destr_response(response);
-
-    response = ffi::exec_HallOfFamePage(session, 0);
-    
-    print_vals(response);
-
-    ffi::destr_response(response);
-    ffi::destr_session(session);
     return 0;
 }
